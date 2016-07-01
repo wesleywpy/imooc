@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+       default-autowire="byType">
+    <!--１.配置数据库相关参数-->
+    <!--<context:property-placeholder location="classpath:jdbc.properties"/>-->
+
+    <bean id="config"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="order" value="1" />
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="false" />
+        <property name="ignoreUnresolvablePlaceholders" value="true"></property>
+    </bean>
+
+    <!--2.配置连接池属性-->
+    <!-- todo c3p0连接池 java.sql.SQLException: Access denied for user ''@'localhost' (using password: NO)-->
+    <!--<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">-->
+        <!--&lt;!&ndash;<property name="driverClass" value="${driverClassName}"></property>&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="jdbcUrl" value="${jdbc.url}"></property>&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="user" value="${jdbc.username}"></property>&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="password" value="${jdbc.password}"></property>&ndash;&gt;-->
+        <!--<property name="driverClass" value="com.mysql.jdbc.Driver"></property>-->
+        <!--<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/wesley"></property>-->
+        <!--<property name="user" value="root"></property>-->
+        <!--<property name="password" value="root123"></property>-->
+
+        <!--<property name="maxPoolSize" value="30"></property>-->
+        <!--<property name="minPoolSize" value="10"></property>-->
+        <!--&lt;!&ndash;关闭连接后不自动commit&ndash;&gt;-->
+        <!--<property name="autoCommitOnClose" value="false"></property>-->
+        <!--&lt;!&ndash;获取连接超时时间&ndash;&gt;-->
+        <!--<property name="checkoutTimeout" value="10000"></property>-->
+        <!--&lt;!&ndash;获取连接重试次数&ndash;&gt;-->
+        <!--<property name="acquireRetryAttempts" value="3"></property>-->
+    <!--</bean>-->
+
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/wesley"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root123"/>
+
+        <!--<property name="url" value="${url}"/>-->
+        <!--<property name="username" value="${username}"/>-->
+        <!--<property name="password" value="${password}"/>-->
+
+         <!--配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="2" />
+        <property name="minIdle" value="2" />
+        <property name="maxActive" value="20" />
+    </bean>
+
+    <!--３.配置SqlSessionFactory对象-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--注入数据库连接池-->
+        <property name="dataSource" ref="druidDataSource"/>
+        <!--配置mybatis全局配置文件:mybatis-config.xml-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--扫描entity包,使用别名,多个用;隔开-->
+        <property name="typeAliasesPackage" value="com.imooc.study.entity"/>
+        <!--扫描sql配置文件:mapper需要的xml文件-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <!--４:配置扫描Dao接口包,动态实现DAO接口,注入到spring容器-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--注入SqlSessionFactory-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!-- 给出需要扫描的Dao接口-->
+        <property name="basePackage" value="com.imooc.study.dao"/>
+    </bean>
+</beans>
