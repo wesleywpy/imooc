@@ -62,6 +62,12 @@
       <artifactId>mybatis-spring</artifactId>
       <version>1.2.3</version>
     </dependency>
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>2.6.2</version>
+    </dependency>
+
 
     <!-- Servlet Web相关-->
     <dependency>
@@ -115,6 +121,11 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
       <version>4.1.7.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>
+      <version>1.4.4.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
