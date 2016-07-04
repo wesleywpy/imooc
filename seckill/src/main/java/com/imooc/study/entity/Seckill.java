@@ -1,11 +1,12 @@
 package com.imooc.study.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Wesley on 2016/5/13.
  */
-public class Seckill {
+public class Seckill implements Serializable{
     private Long id;
     private String name;
     private Long number;

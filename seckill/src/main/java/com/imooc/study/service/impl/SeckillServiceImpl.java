@@ -2,6 +2,7 @@ package com.imooc.study.service.impl;
 
 import com.imooc.study.dao.SeckillDao;
 import com.imooc.study.dao.SuccessKilledDao;
+import com.imooc.study.dao.cache.SeckillCache;
 import com.imooc.study.dto.Exposer;
 import com.imooc.study.dto.SeckillExecution;
 import com.imooc.study.entity.Seckill;
@@ -22,6 +23,7 @@ import org.springframework.util.StringUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  *
@@ -38,6 +40,9 @@ public class SeckillServiceImpl implements SeckillService {
     SeckillDao seckillDao;
 
     @Autowired
+    SeckillCache seckillCache;
+
+    @Autowired
     SuccessKilledDao successKilledDao;
 
     @Override
@@ -52,10 +57,17 @@ public class SeckillServiceImpl implements SeckillService {
 
     @Override
     public Exposer exportSeckillUrl(long seckillId) {
+        //获取缓存
+        Optional optional = seckillCache.getSeckill(seckillId);
+        if(optional.isPresent()){
+            return new Exposer(true, seckillId, signature(seckillId));
+        }
+
         Seckill seckill = seckillDao.queryById(seckillId);
         if(Objects.isNull(seckill))
             return new Exposer(seckillId, false);
 
+        seckillCache.putSeckill(seckill);
         Date start = seckill.getStartTime();
         Date end = seckill.getEndTime();
         Date now = new Date();
