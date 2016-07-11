@@ -12,6 +12,7 @@ import com.imooc.study.exception.RepeatKillException;
 import com.imooc.study.exception.SeckillCloseException;
 import com.imooc.study.exception.SeckillException;
 import com.imooc.study.service.SeckillService;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -98,19 +101,20 @@ public class SeckillServiceImpl implements SeckillService {
      */
     public SeckillExecution executeSeckill(long seckillId, long userPhone, String sign) throws SeckillException {
         if(StringUtils.isEmpty(sign) || !sign.equals(signature(seckillId))){
-            throw  new SeckillException("签名错误");
+            throw  new SeckillException(SeckillStatEnum.DATA_REWRITE.getInfo());
         }
-        //执行秒杀逻辑:1.减库存.2.记录购买行为
+        //执行秒杀逻辑:2.减库存.1.记录购买行为
         Date now = new Date();
         try {
-            int updateCount = seckillDao.reduceNumber(seckillId, now);
-            if(updateCount <= 0) {
-                throw new SeckillCloseException("秒杀已关闭");
-            }
-
+            //insert操作不涉及行级锁，放在前面执行，降低网络延迟
             int inserCount = successKilledDao.insertSuccessKilled(seckillId, userPhone);
             if(inserCount <= 0) {
                 throw new RepeatKillException("重复秒杀");
+            }
+
+            int updateCount = seckillDao.reduceNumber(seckillId, now);
+            if(updateCount <= 0) {
+                throw new SeckillCloseException("秒杀已关闭");
             }
 
             SuccessKilled successKilled = successKilledDao.queryByIdWithSeckill(seckillId, userPhone);
@@ -123,5 +127,24 @@ public class SeckillServiceImpl implements SeckillService {
             log.error(e.getMessage());
             throw new SeckillException("系统异常");
         }
+    }
+
+    @Override
+    public SeckillException executeSeckillByProcedure(long seckillId, long userPhone, String signature) throws SeckillException {
+        if(StringUtils.isEmpty(signature) || !signature.equals(signature(seckillId))){
+            throw  new SeckillException(SeckillStatEnum.DATA_REWRITE.getInfo());
+        }
+        Date killTime = new Date();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("seckillId", seckillId);
+        map.put("phone", userPhone);
+        map.put("killTime", killTime);
+        map.put("result", null);
+        //执行存储过程 result被赋值
+        seckillDao.killByProcedure(map);
+        Integer result = MapUtils.getInteger(map, "result", SeckillStatEnum.INNER_ERROR.getState());
+        SeckillStatEnum seckillStatEnum = SeckillStatEnum.valueOf(result);
+
+        return null;
     }
 }

@@ -43,11 +43,17 @@ public interface SeckillService {
 
     /**
      * 执行秒杀操作
-     * @param seckillId
-     * @param userPhone
-     * @param signature
+     * @param seckillId 秒杀ID
+     * @param userPhone 手机号
+     * @param signature 摘要
      * @return
      * @throws SeckillException
      */
     SeckillExecution executeSeckill(long seckillId, long userPhone, String signature) throws SeckillException;
+
+    /**
+     * 执行秒杀 通过存储过程
+     * @throws SeckillException
+     */
+    SeckillException executeSeckillByProcedure(long seckillId, long userPhone, String signature) throws SeckillException;
 }

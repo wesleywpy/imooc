@@ -20,6 +20,15 @@ public enum SeckillStatEnum {
         this.info = info;
     }
 
+    public static SeckillStatEnum valueOf(Integer state){
+        for (SeckillStatEnum seckill : values()){
+            if(seckill.getState() == state)
+                return seckill;
+        }
+        return null;
+    }
+
+
     public int getState() {
         return state;
     }
