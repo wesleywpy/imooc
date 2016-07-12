@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -130,7 +129,7 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     @Override
-    public SeckillException executeSeckillByProcedure(long seckillId, long userPhone, String signature) throws SeckillException {
+    public SeckillExecution executeSeckillByProcedure(long seckillId, long userPhone, String signature) throws SeckillException {
         if(StringUtils.isEmpty(signature) || !signature.equals(signature(seckillId))){
             throw  new SeckillException(SeckillStatEnum.DATA_REWRITE.getInfo());
         }
@@ -144,7 +143,11 @@ public class SeckillServiceImpl implements SeckillService {
         seckillDao.killByProcedure(map);
         Integer result = MapUtils.getInteger(map, "result", SeckillStatEnum.INNER_ERROR.getState());
         SeckillStatEnum seckillStatEnum = SeckillStatEnum.valueOf(result);
+        if(!seckillStatEnum.equals(SeckillStatEnum.SUCCESS)){
+            throw new SeckillException(seckillStatEnum.getInfo());
+        }
 
-        return null;
+        SuccessKilled successKilled = successKilledDao.queryByIdWithSeckill(seckillId, userPhone);
+        return new SeckillExecution(seckillId, seckillStatEnum, successKilled);
     }
 }

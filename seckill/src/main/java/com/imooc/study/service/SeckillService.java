@@ -55,5 +55,5 @@ public interface SeckillService {
      * 执行秒杀 通过存储过程
      * @throws SeckillException
      */
-    SeckillException executeSeckillByProcedure(long seckillId, long userPhone, String signature) throws SeckillException;
+    SeckillExecution executeSeckillByProcedure(long seckillId, long userPhone, String signature) throws SeckillException;
 }
