@@ -4,7 +4,6 @@ import com.imooc.study.dto.Exposer;
 import com.imooc.study.dto.SeckillExecution;
 import com.imooc.study.entity.Seckill;
 import com.imooc.study.exception.SeckillException;
-
 import java.util.List;
 
 /**
@@ -18,7 +17,6 @@ public interface SeckillService {
 
     /**
      * 查询所有秒杀
-     * @return
      */
     List<Seckill> getSeckillList();
 
@@ -27,7 +25,6 @@ public interface SeckillService {
      * 查询单个秒杀记录
      *
      * @param seckillId
-     * @return
      */
     Seckill getById(long seckillId);
 
@@ -37,7 +34,6 @@ public interface SeckillService {
      * 否则输出系统时间和秒杀时间
      *
      * @param seckillId
-     * @return
      */
     Exposer exportSeckillUrl(long seckillId);
 

@@ -31,14 +31,13 @@ import java.util.Objects;
 @RequestMapping("/seckill")
 public class SeckillController {
 
-    private Log LOG = LogFactory.getLog(this.getClass());
+    private final Log log = LogFactory.getLog(this.getClass());
 
     @Autowired
     SeckillService seckillService;
 
     /**
      * 秒杀列表
-     * @return
      */
     @RequestMapping("/list")
     public String list(Model model){
@@ -50,7 +49,6 @@ public class SeckillController {
 
     /**
      * 详情页
-     * @return
      */
     @RequestMapping("/{id}/detail")
     public String detail(@PathVariable Long id, Model model){
@@ -80,7 +78,7 @@ public class SeckillController {
             result.setData(exposer);
             result.setSuccess(true);
         }catch (Exception e){
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
             result = new SeckillResult<>(false, e.getMessage());
         }
         return result;
@@ -88,7 +86,6 @@ public class SeckillController {
 
     /**
      * 执行秒杀
-     * @return
      */
     @RequestMapping(value = "/{id}/{md5}/execution", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -108,7 +105,7 @@ public class SeckillController {
             SeckillExecution execution = new SeckillExecution(seckillId, SeckillStatEnum.END);
             return new SeckillResult<SeckillExecution>(true, execution);
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
             SeckillExecution execution = new SeckillExecution(seckillId, SeckillStatEnum.INNER_ERROR);
             return new SeckillResult<SeckillExecution>(true, execution);
         }
@@ -117,7 +114,6 @@ public class SeckillController {
 
     /**
      * 系统时间
-     * @return
      */
     @RequestMapping("/time/now")
     @ResponseBody

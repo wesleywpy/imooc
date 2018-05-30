@@ -36,7 +36,7 @@ public class SeckillServiceImpl implements SeckillService {
 
     private Log log = LogFactory.getLog(this.getClass());
 
-    private final String salt = "/wesley_666(-).com";
+    private static final String SALT = "/wesley_666(-).com";
 
     @Autowired
     SeckillDao seckillDao;
@@ -83,25 +83,26 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * MD5签名
      * @param seckillId
-     * @return
      */
     public String signature(long seckillId){
-        String sign = seckillId + salt;
+        String sign = seckillId + SALT;
         return DigestUtils.md5DigestAsHex(sign.getBytes());
     }
 
-    @Override
-    @Transactional
+
     /**
      * 使用注解控制事务的优点:
      * 1.开发团队达成一致约定,明确标注事务方法的编程风格.
      * 2.保证事务方法的执行时间尽可能短,不要穿插其他网络操作RPC/HTTP请求或者 剥离到事务方法外部.
      * 3.不是所有的方法都需要事务.如一些查询的service.只有一条修改操作的service.只读操作不需要事务控制
      */
+    @Override
+    @Transactional
     public SeckillExecution executeSeckill(long seckillId, long userPhone, String sign) throws SeckillException {
         if(StringUtils.isEmpty(sign) || !sign.equals(signature(seckillId))){
             throw  new SeckillException(SeckillStatEnum.DATA_REWRITE.getInfo());
         }
+        // TODO: 2018/5/30 使用Redis减库存
         //执行秒杀逻辑:2.减库存.1.记录购买行为
         Date now = new Date();
         try {
@@ -134,7 +135,7 @@ public class SeckillServiceImpl implements SeckillService {
             throw  new SeckillException(SeckillStatEnum.DATA_REWRITE.getInfo());
         }
         Date killTime = new Date();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("seckillId", seckillId);
         map.put("phone", userPhone);
         map.put("killTime", killTime);
