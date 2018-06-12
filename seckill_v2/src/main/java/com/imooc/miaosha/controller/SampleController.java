@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.imooc.miaosha.domain.User;
 import com.imooc.miaosha.redis.RedisService;
 import com.imooc.miaosha.redis.UserKey;
-import com.imooc.miaosha.result.CodeMsg;
-import com.imooc.miaosha.result.Result;
+import com.imooc.miaosha.support.result.CodeMsg;
+import com.imooc.miaosha.support.result.Result;
 import com.imooc.miaosha.service.UserService;
 
 @Controller

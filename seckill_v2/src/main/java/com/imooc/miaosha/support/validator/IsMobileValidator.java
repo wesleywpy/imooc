@@ -1,10 +1,10 @@
-package com.imooc.miaosha.validator;
+package com.imooc.miaosha.support.validator;
 import  javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.imooc.miaosha.util.ValidatorUtil;
+import com.imooc.miaosha.support.util.ValidatorUtil;
 
 public class IsMobileValidator implements ConstraintValidator<IsMobile, String> {
 

@@ -12,10 +12,10 @@ import com.imooc.miaosha.domain.MiaoshaUser;
 import com.imooc.miaosha.exception.GlobalException;
 import com.imooc.miaosha.redis.MiaoshaUserKey;
 import com.imooc.miaosha.redis.RedisService;
-import com.imooc.miaosha.result.CodeMsg;
-import com.imooc.miaosha.util.MD5Util;
-import com.imooc.miaosha.util.UUIDUtil;
-import com.imooc.miaosha.vo.LoginVo;
+import com.imooc.miaosha.support.result.CodeMsg;
+import com.imooc.miaosha.support.util.MD5Util;
+import com.imooc.miaosha.support.util.UUIDUtil;
+import com.imooc.miaosha.support.vo.LoginVo;
 
 @Service
 public class MiaoshaUserService {

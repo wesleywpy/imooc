@@ -1,10 +1,10 @@
-package com.imooc.miaosha.vo;
+package com.imooc.miaosha.support.vo;
 
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
-import com.imooc.miaosha.validator.IsMobile;
+import com.imooc.miaosha.support.validator.IsMobile;
 
 public class LoginVo {
 	

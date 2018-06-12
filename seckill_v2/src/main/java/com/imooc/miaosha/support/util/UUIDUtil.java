@@ -1,4 +1,4 @@
-package com.imooc.miaosha.util;
+package com.imooc.miaosha.support.util;
 
 import java.util.UUID;
 

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.imooc.miaosha.result.CodeMsg;
-import com.imooc.miaosha.result.Result;
+import com.imooc.miaosha.support.result.CodeMsg;
+import com.imooc.miaosha.support.result.Result;
 
 @ControllerAdvice
 @ResponseBody

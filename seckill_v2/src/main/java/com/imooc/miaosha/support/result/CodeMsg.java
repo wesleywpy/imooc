@@ -1,4 +1,4 @@
-package com.imooc.miaosha.result;
+package com.imooc.miaosha.support.result;
 
 public class CodeMsg {
 	

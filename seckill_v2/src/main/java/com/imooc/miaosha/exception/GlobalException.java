@@ -1,6 +1,6 @@
 package com.imooc.miaosha.exception;
 
-import com.imooc.miaosha.result.CodeMsg;
+import com.imooc.miaosha.support.result.CodeMsg;
 
 public class GlobalException extends RuntimeException{
 
