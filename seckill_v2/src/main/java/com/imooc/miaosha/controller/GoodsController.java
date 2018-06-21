@@ -21,6 +21,8 @@ import com.imooc.miaosha.redis.GoodsKey;
 import com.imooc.miaosha.redis.RedisService;
 import com.imooc.miaosha.service.GoodsService;
 import com.imooc.miaosha.service.MiaoshaUserService;
+import com.imooc.miaosha.support.result.Result;
+import com.imooc.miaosha.support.vo.GoodsDetailVo;
 import com.imooc.miaosha.support.vo.GoodsVo;
 
 @Controller
@@ -64,13 +66,47 @@ public class GoodsController {
         return html;
     }
 
-    @RequestMapping("/to_detail/{goodsId}")
-    public String detail(Model model, MiaoshaUser user, @PathVariable("goodsId") long goodsId) {
+    @RequestMapping(value = "/to_detail2/{goodsId}", produces = "text/html")
+    @ResponseBody
+    public String detail2(HttpServletRequest request, HttpServletResponse response, Model model, MiaoshaUser user, @PathVariable("goodsId") long goodsId) {
         model.addAttribute("user", user);
 
+        // 取缓存
+        String html = redisService.get(GoodsKey.GOODS_DETAIL, Long.toString(goodsId), String.class);
+        if (!StringUtils.isEmpty(html)) {
+            return html;
+        }
+
+        // 手动渲染
         GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
         model.addAttribute("goods", goods);
+        int[] status = getStatus(goods);
+        model.addAttribute("miaoshaStatus", status[0]);
+        model.addAttribute("remainSeconds", status[1]);
 
+        SpringWebContext ctx = new SpringWebContext(request, response, request.getServletContext(), request.getLocale(), model.asMap(), applicationContext);
+        html = thymeleafViewResolver.getTemplateEngine().process("goods_detail", ctx);
+        if (!StringUtils.isEmpty(html)) {
+            redisService.set(GoodsKey.GOODS_DETAIL, Long.toString(goodsId), html);
+        }
+        return html;
+    }
+
+    @RequestMapping(value = "/detail/{goodsId}")
+    @ResponseBody
+    public Result<GoodsDetailVo> detail(HttpServletRequest request, HttpServletResponse response, Model model, MiaoshaUser user,
+                                        @PathVariable("goodsId") long goodsId) {
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
+        int[] status = getStatus(goods);
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setGoods(goods);
+        vo.setUser(user);
+        vo.setRemainSeconds(status[0]);
+        vo.setMiaoshaStatus(status[1]);
+        return Result.success(vo);
+    }
+
+    private int[] getStatus(GoodsVo goods) {
         long startAt = goods.getStartDate().getTime();
         long endAt = goods.getEndDate().getTime();
         long now = System.currentTimeMillis();
@@ -87,9 +123,7 @@ public class GoodsController {
             miaoshaStatus = 1;
             remainSeconds = 0;
         }
-        model.addAttribute("miaoshaStatus", miaoshaStatus);
-        model.addAttribute("remainSeconds", remainSeconds);
-        return "goods_detail";
+
+        return new int[] { miaoshaStatus, remainSeconds };
     }
-    
 }
