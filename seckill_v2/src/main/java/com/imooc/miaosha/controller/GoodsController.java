@@ -1,10 +1,15 @@
 package com.imooc.miaosha.controller;
 
-import java.util.List;
-
+import com.imooc.miaosha.domain.MiaoshaUser;
+import com.imooc.miaosha.redis.GoodsKey;
+import com.imooc.miaosha.redis.RedisService;
+import com.imooc.miaosha.service.GoodsService;
+import com.imooc.miaosha.service.MiaoshaUserService;
+import com.imooc.miaosha.support.result.Result;
+import com.imooc.miaosha.support.vo.GoodsDetailVo;
+import com.imooc.miaosha.support.vo.GoodsVo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -15,15 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.spring4.context.SpringWebContext;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
-
-import com.imooc.miaosha.domain.MiaoshaUser;
-import com.imooc.miaosha.redis.GoodsKey;
-import com.imooc.miaosha.redis.RedisService;
-import com.imooc.miaosha.service.GoodsService;
-import com.imooc.miaosha.service.MiaoshaUserService;
-import com.imooc.miaosha.support.result.Result;
-import com.imooc.miaosha.support.vo.GoodsDetailVo;
-import com.imooc.miaosha.support.vo.GoodsVo;
+import java.util.List;
 
 @Controller
 @RequestMapping("/goods")
@@ -101,8 +98,8 @@ public class GoodsController {
         GoodsDetailVo vo = new GoodsDetailVo();
         vo.setGoods(goods);
         vo.setUser(user);
-        vo.setRemainSeconds(status[0]);
-        vo.setMiaoshaStatus(status[1]);
+        vo.setMiaoshaStatus(status[0]);
+        vo.setRemainSeconds(status[1]);
         return Result.success(vo);
     }
 

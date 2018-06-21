@@ -1,13 +1,5 @@
 package com.imooc.miaosha.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.imooc.miaosha.domain.MiaoshaOrder;
 import com.imooc.miaosha.domain.MiaoshaUser;
 import com.imooc.miaosha.domain.OrderInfo;
@@ -19,6 +11,13 @@ import com.imooc.miaosha.service.OrderService;
 import com.imooc.miaosha.support.result.CodeMsg;
 import com.imooc.miaosha.support.result.Result;
 import com.imooc.miaosha.support.vo.GoodsVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/miaosha")
@@ -41,7 +40,7 @@ public class MiaoshaController {
 
     @RequestMapping(value = "/do_miaosha", method = RequestMethod.POST)
     @ResponseBody
-    public Result<OrderInfo> list(Model model, MiaoshaUser user, @RequestParam("goodsId") long goodsId) {
+    public Result<OrderInfo> seckill(Model model, MiaoshaUser user, @RequestParam("goodsId") long goodsId) {
         model.addAttribute("user", user);
         if (user == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
