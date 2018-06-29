@@ -1,11 +1,13 @@
 package com.imooc.miaosha.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.imooc.miaosha.dao.GoodsDao;
 import com.imooc.miaosha.domain.MiaoshaGoods;
 import com.imooc.miaosha.support.vo.GoodsVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 public class GoodsService {
@@ -22,12 +24,19 @@ public class GoodsService {
     }
 
     /**
-     * @return 1 减库存成功, 小于1 减库存失败
      */
-    public int reduceStock(GoodsVo goods) {
+    public boolean reduceStock(GoodsVo goods) {
         MiaoshaGoods g = new MiaoshaGoods();
         g.setGoodsId(goods.getId());
-        return goodsDao.reduceStock(g);
+        return goodsDao.reduceStock(g) == 1;
     }
 
+    public void resetStock(List<GoodsVo> goodsList) {
+        for (GoodsVo goods : goodsList) {
+            MiaoshaGoods g = new MiaoshaGoods();
+            g.setGoodsId(goods.getId());
+            g.setStockCount(goods.getStockCount());
+            goodsDao.resetStock(g);
+        }
+    }
 }

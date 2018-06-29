@@ -1,5 +1,8 @@
 package com.imooc.miaosha.redis;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +10,8 @@ import com.alibaba.fastjson.JSON;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 
 @Service
 public class RedisService {
@@ -14,6 +19,38 @@ public class RedisService {
 	@Autowired
 	JedisPool jedisPool;
 	
+    public static <T> String beanToString(T value) {
+        if (value == null) {
+            return null;
+        }
+        Class<?> clazz = value.getClass();
+        if (clazz == int.class || clazz == Integer.class) {
+            return "" + value;
+        } else if (clazz == String.class) {
+            return (String) value;
+        } else if (clazz == long.class || clazz == Long.class) {
+            return "" + value;
+        } else {
+            return JSON.toJSONString(value);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T stringToBean(String str, Class<T> clazz) {
+        if (str == null || str.length() <= 0 || clazz == null) {
+            return null;
+        }
+        if (clazz == int.class || clazz == Integer.class) {
+            return (T) Integer.valueOf(str);
+        } else if (clazz == String.class) {
+            return (T) str;
+        } else if (clazz == long.class || clazz == Long.class) {
+            return (T) Long.valueOf(str);
+        } else {
+            return JSON.toJavaObject(JSON.parseObject(str), clazz);
+        }
+    }
+
 	/**
 	 * 获取当个对象
 	 * */
@@ -24,8 +61,7 @@ public class RedisService {
 			 //生成真正的key
 			 String realKey  = prefix.getPrefix() + key;
 			 String  str = jedis.get(realKey);
-			 T t =  stringToBean(str, clazz);
-			 return t;
+            return stringToBean(str, clazz);
 		 }finally {
 			  returnToPool(jedis);
 		 }
@@ -55,7 +91,7 @@ public class RedisService {
 			  returnToPool(jedis);
 		 }
 	}
-	
+
 	/**
 	 * 判断key是否存在
 	 * */
@@ -70,7 +106,7 @@ public class RedisService {
 			  returnToPool(jedis);
 		 }
 	}
-	
+
 	/**
 	 * 增加值
 	 * */
@@ -85,7 +121,57 @@ public class RedisService {
 			  returnToPool(jedis);
 		 }
 	}
+
+    public boolean delete(KeyPrefix prefix) {
+        if (prefix == null) {
+            return false;
+        }
+        List<String> keys = scanKeys(prefix.getPrefix());
+        if (keys == null || keys.isEmpty()) {
+            return true;
+        }
+
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.del(keys.toArray(new String[0]));
+            return true;
+        } catch (final Exception e) {
+            return false;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
 	
+    public List<String> scanKeys(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            List<String> keys = new ArrayList<>();
+            String cursor = "0";
+            ScanParams sp = new ScanParams();
+            sp.match("*" + key + "*");
+            sp.count(100);
+            do {
+                ScanResult<String> ret = jedis.scan(cursor, sp);
+                List<String> result = ret.getResult();
+                if (result != null && !result.isEmpty()) {
+                    keys.addAll(result);
+                }
+                // 再处理cursor
+                cursor = ret.getStringCursor();
+            } while (!cursor.equals("0"));
+
+            return keys;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
 	/**
 	 * 减少值
 	 * */
@@ -99,38 +185,6 @@ public class RedisService {
 		 }finally {
 			  returnToPool(jedis);
 		 }
-	}
-	
-	private <T> String beanToString(T value) {
-		if(value == null) {
-			return null;
-		}
-		Class<?> clazz = value.getClass();
-		if(clazz == int.class || clazz == Integer.class) {
-			 return ""+value;
-		}else if(clazz == String.class) {
-			 return (String)value;
-		}else if(clazz == long.class || clazz == Long.class) {
-			return ""+value;
-		}else {
-			return JSON.toJSONString(value);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T stringToBean(String str, Class<T> clazz) {
-		if(str == null || str.length() <= 0 || clazz == null) {
-			 return null;
-		}
-		if(clazz == int.class || clazz == Integer.class) {
-			 return (T)Integer.valueOf(str);
-		}else if(clazz == String.class) {
-			 return (T)str;
-		}else if(clazz == long.class || clazz == Long.class) {
-			return  (T)Long.valueOf(str);
-		}else {
-			return JSON.toJavaObject(JSON.parseObject(str), clazz);
-		}
 	}
 
 	private void returnToPool(Jedis jedis) {

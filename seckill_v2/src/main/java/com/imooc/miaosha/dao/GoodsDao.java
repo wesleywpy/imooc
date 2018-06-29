@@ -1,12 +1,14 @@
 package com.imooc.miaosha.dao;
 
-import com.imooc.miaosha.domain.MiaoshaGoods;
-import com.imooc.miaosha.support.vo.GoodsVo;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import java.util.List;
+
+import com.imooc.miaosha.domain.MiaoshaGoods;
+import com.imooc.miaosha.support.vo.GoodsVo;
 
 @Mapper
 public interface GoodsDao {
@@ -23,4 +25,6 @@ public interface GoodsDao {
     @Update("update miaosha_goods set stock_count = stock_count - 1 where goods_id = #{goodsId} and stock_count > 0")
     public int reduceStock(MiaoshaGoods g);
 
+    @Update("update miaosha_goods set stock_count = #{stockCount} where goods_id = #{goodsId}")
+    public int resetStock(MiaoshaGoods g);
 }

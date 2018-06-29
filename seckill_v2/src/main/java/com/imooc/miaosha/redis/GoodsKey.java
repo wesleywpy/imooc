@@ -9,6 +9,8 @@ public class GoodsKey extends BasePrefix {
 
     public static final GoodsKey GOODS_DETAIL = new GoodsKey(60, "goods_detail");
 
+    public static final GoodsKey GOODS_STOCK = new GoodsKey(0, "goods_stock");
+
     private GoodsKey(int expireSeconds, String prefix) {
         super(expireSeconds, prefix);
     }
