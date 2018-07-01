@@ -1,18 +1,15 @@
 package com.imooc.miaosha.rabbitmq;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.imooc.miaosha.config.RabbitMqConfig;
+import com.imooc.miaosha.redis.RedisService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.imooc.miaosha.config.RabbitMqConfig;
-import com.imooc.miaosha.redis.RedisService;
-
 @Service
+@Slf4j
 public class MQSender {
-
-    private static Logger log = LoggerFactory.getLogger(MQSender.class);
 
     @Autowired
     AmqpTemplate amqpTemplate;

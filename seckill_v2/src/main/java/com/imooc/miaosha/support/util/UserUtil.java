@@ -49,7 +49,7 @@ public class UserUtil {
 //		conn.close();
 //		System.out.println("insert to db");
 		//登录，生成token
-		String urlString = "http://localhost:8081/login/do_login";
+		String urlString = "http://192.168.101.190:8082/login/do_login";
 		File file = new File("I:\\Course\\Java秒杀\\tokens.txt");
 		if(file.exists()) {
 			file.delete();

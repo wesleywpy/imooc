@@ -1,11 +1,5 @@
 package com.imooc.miaosha.rabbitmq;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.imooc.miaosha.config.RabbitMqConfig;
 import com.imooc.miaosha.domain.MiaoshaOrder;
 import com.imooc.miaosha.domain.MiaoshaUser;
@@ -14,11 +8,14 @@ import com.imooc.miaosha.service.GoodsService;
 import com.imooc.miaosha.service.MiaoshaService;
 import com.imooc.miaosha.service.OrderService;
 import com.imooc.miaosha.support.vo.GoodsVo;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class MQReceiver {
-
-    private static Logger log = LoggerFactory.getLogger(MQReceiver.class);
 
     @Autowired
     RedisService redisService;
